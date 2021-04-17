@@ -1,0 +1,6 @@
+file main.ko
+insmod
+rmmod
+modinfo main.ko
+arm-linux-guneabihf-objdump -h main.ko
+scp main.ko debian@192.168.7.2:/home/debian/drivers
