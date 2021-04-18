@@ -4,6 +4,9 @@
 #include<linux/kdev_t.h>
 #include<linux/uaccess.h>
 
+#undef pr_fmt
+#define pr_fmt(fmt) "%s :" fmt,__func__
+
 #define NO_OF_DEVICES 4
 
 #define MEM_SIZE_MAX_PCDEV1 1024
@@ -26,6 +29,7 @@ struct pcdev_private_data
 	unsigned size;
 	const char *serial_number;
 	int perm;
+	/*Cdev variable*/
 	struct cdev cdev;
 };
 
@@ -33,15 +37,45 @@ struct pcdev_private_data
 struct pcdrv_private_data
 {
 	int total_devices;
+	/* this holds the device number*/
+	dev_t device_number;
+	struct class *class_pcd;
+	struct device *device_pcd;
 	struct pcdev_private_data pcdev_data[NO_OF_DEVICES];
 };
 
+struct pcdrv_private_data pcdrv_data =
+{
+	.total_devices = NO_OF_DEVICES,
+	.pcdev_data = {
 
-/* this holds the device number*/
-dev_t device_number;
+		[0]= {
+			.buffer = device_buffer_pcdev1,
+			.size = MEM_SIZE_MAX_PCDEV1,
+			.serial_number = "PCDEV1XYZ123",
+			.perm = 0x01 /*RDONLY*/
+		},
+                [1]= {
+                        .buffer = device_buffer_pcdev2,
+                        .size = MEM_SIZE_MAX_PCDEV2,
+                        .serial_number = "PCDEV2XYZ123",
+                        .perm = 0x10 /*RDONLY*/
+                },
+                [2]= {
+                        .buffer = device_buffer_pcdev3,
+                        .size = MEM_SIZE_MAX_PCDEV3,
+                        .serial_number = "PCDEV1XYZ123",
+                        .perm = 0x11 /*RDONLY*/
+                },
+                [3]= {
+                        .buffer = device_buffer_pcdev4,
+                        .size = MEM_SIZE_MAX_PCDEV4,
+                        .serial_number = "PCDEV4XYZ123",
+                        .perm = 0x11 /*RDONLY*/
+                }
+	}
+};
 
-/*Cdev variable*/
-struct cdev pcd_cdev;
 
 loff_t pcd_lseek(struct file *filp, loff_t offset, int whence)
 {
@@ -164,12 +198,6 @@ struct file_operations pcd_fops=
 	.owner = THIS_MODULE
 };
 
-struct class *class_pcd;
-
-struct device *device_pcd;
-
-#undef pr_fmt
-#define pr_fmt(fmt) "%s :" fmt,__func__
 
 static int __init pcd_driver_init(void)
 {
