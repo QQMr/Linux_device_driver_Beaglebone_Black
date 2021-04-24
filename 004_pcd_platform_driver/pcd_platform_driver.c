@@ -4,17 +4,35 @@
 #include<linux/kdev_t.h>
 #include<linux/uaccess.h>
 #include<linux/platform_device.h>
+#include "platform.h"
 
 #undef pr_fmt
 #define pr_fmt(fmt) "%s :" fmt,__func__
 
 
-#define RDONLY 0X01
-#define WRONLY 0X10
-#define RDWR   0X11
+//#define RDONLY 0X01
+//#define WRONLY 0X10
+//#define RDWR   0X11
 
+/*Device private_data structure */
+struct pcdev_private_data
+{
+	struct pcdev_platform_data pdata;
+	char *buffer;
+	dev_t dev_num;
+	struct cdev cdev;
+};
 
+/**Driver private data structure*/
+struct pcdrv_private_data
+{
+	int total_devices;
+	dev_t device_num_base;
+	struct class *class_pcd;
+	struct device *device_pcd;
+};
 
+struct pcdrv_private_data pcdrv_data;
 
 loff_t pcd_lseek(struct file *filp, loff_t offset, int whence)
 {
@@ -79,8 +97,31 @@ struct platform_driver pcd_platform_driver =
 };
 
 
+#define MAX_DEVICES 10
+
 static int __init pcd_platform_driver_init(void)
 {
+	int ret;
+
+	/*1. Dynamically allocate a device umber for MAX_DEVICES*/
+	ret = alloc_chrdev_region(&pcdrv_data.device_num_base,0,MAX_DEVICES,"pcdevs");
+	if(ret < 0){
+		pr_err("Alloc chrdev failed");
+		return ret;
+	}
+
+	/*2. Create device class under /sys/class */
+	pcdrv_data.class_pcd = class_create(THIS_MODULE,"pcd_class");
+        if(IS_ERR(pcdrv_data.class_pcd))
+        {
+                pr_err("Class creation failed\n");
+                ret = PTR_ERR(pcdrv_data.class_pcd);
+                unregister_chrdev_region(pcdrv_data.device_num_base,MAX_DEVICES);
+		return ret; 
+        }
+
+
+	/*3. Register a platform driver*/
 	platform_driver_register(&pcd_platform_driver);
 	pr_info("pcd platform loaded\n");
 
@@ -91,7 +132,15 @@ static int __init pcd_platform_driver_init(void)
 
 static void __exit pcd_platform_driver_exit(void)
 {
+	/*1. Unregister the platform driver*/
 	platform_driver_unregister(&pcd_platform_driver);
+
+	/*2. Class destroy*/
+	class_destroy(pcdrv_data.class_pcd);
+
+	/*3. Unregister device numbers for MAX_DEVICES*/
+	unregister_chrdev_region(pcdrv_data.device_num_base,MAX_DEVICES);
+
 	pr_info("pcd platform driver unloaded\n");
 
 }
