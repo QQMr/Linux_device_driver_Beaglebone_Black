@@ -58,12 +58,14 @@ struct file_operations pcd_fops=
 /*gets called when the device is removed from the system*/
 int pcd_platform_driver_remove(struct platform_device *pdev)
 {
+	pr_info("A device is removed\n");
 	return 0;
 }
 
 /*gets called when matched platform device is found*/
 int pcd_platform_driver_prob(struct platform_device *pdev)
 {
+	pr_info("A device is detected\n");
 	return 0;
 }
 
