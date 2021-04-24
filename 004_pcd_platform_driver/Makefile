@@ -1,4 +1,4 @@
-obj-m:= pcd_device_setup.o
+obj-m:= pcd_device_setup.o pcd_platform_driver.o
 ARCH =arm
 CROSS_COMPLIE =arm-linux-gnueabihf-
 KERN_DIR = /home/qq/workspace/ldd/source/linux_bbb_4.14/
