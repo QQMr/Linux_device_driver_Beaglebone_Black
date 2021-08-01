@@ -79,6 +79,21 @@ struct file_operations pcd_fops=
 /*gets called when the device is removed from the system*/
 int pcd_platform_driver_remove(struct platform_device *pdev)
 {
+
+	struct pcdev_private_data *dev_data = dev_get_drvdata(&pdev->dev);
+
+	/*1. Remove a device that was created with device_create()  */
+	device_destroy( pcdrv_data.class_pcd, dev_data->dev_num  );
+
+	/*2. Remove a cdev entry from the system*/
+	cdev_del(&dev_data->cdev);
+
+	/*3. Free the memory held by the device*/
+	kfree(dev_data->buffer);
+	kfree(dev_data);
+
+	pcdrv_data.total_devices--;
+
 	pr_info("A device is removed\n");
 	return 0;
 }
@@ -109,6 +124,9 @@ int pcd_platform_driver_prob(struct platform_device *pdev)
                 ret = -ENOMEM;
                 goto out;
         }
+
+	/*save the device private data pointer in platform device structure */ /* equall pdev->dev.driver_data = dev_data  */
+	dev_set_drvdata(&pdev->dev, dev_data);
 
 	dev_data->pdata.size = pdata->size;
 	dev_data->pdata.perm = pdata->perm;
@@ -153,6 +171,8 @@ int pcd_platform_driver_prob(struct platform_device *pdev)
 	}
 
 	/*7. Error handling*/
+
+	pcdrv_data.total_devices++;
 
 	pr_info("The prob was successful\n");
 	return 0;
