@@ -89,8 +89,8 @@ int pcd_platform_driver_remove(struct platform_device *pdev)
 	cdev_del(&dev_data->cdev);
 
 	/*3. Free the memory held by the device*/
-	kfree(dev_data->buffer);
-	kfree(dev_data);
+	//kfree(dev_data->buffer);
+	//kfree(dev_data);
 
 	pcdrv_data.total_devices--;
 
@@ -118,7 +118,7 @@ int pcd_platform_driver_prob(struct platform_device *pdev)
 
 
 	/*2. Dynamically allocate memory for the device private data */
-        dev_data = kzalloc(sizeof(*dev_data), GFP_KERNEL );
+        dev_data = devm_kzalloc( &pdev->dev, sizeof(*dev_data), GFP_KERNEL );
         if(!dev_data){
                 pr_info("Cannot allocate memory");
                 ret = -ENOMEM;
@@ -139,7 +139,7 @@ int pcd_platform_driver_prob(struct platform_device *pdev)
 
 	/*3. Dynamically aloocate memory for the device buffer using size
 	information from the platform data*/
-	dev_data->buffer = kzalloc( dev_data->pdata.size, GFP_KERNEL );
+	dev_data->buffer = devm_kzalloc( &pdev->dev , dev_data->pdata.size, GFP_KERNEL );
 	if(!dev_data->buffer)
 	{
 		pr_info("Cant't allocate memory\n");
@@ -180,10 +180,9 @@ int pcd_platform_driver_prob(struct platform_device *pdev)
 cdev_del:
 	cdev_del(&dev_data->cdev);
 buffer_free:
-	kfree(dev_data->buffer);
-
+	devm_kfree( &pdev->dev, dev_data->buffer);
 dev_data_free:
-	kfree(dev_data);
+	devm_kfree( &pdev->dev, dev_data);
 
 out:
 	pr_info("Device probe failed\n");
