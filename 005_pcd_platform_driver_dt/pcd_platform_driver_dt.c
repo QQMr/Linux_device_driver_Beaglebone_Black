@@ -158,6 +158,8 @@ struct pcdev_platform_data* pcdev_get_platdata_from_dt(struct device *dev)
 	
 }
 
+struct of_device_id org_pcdev_dt_match[];
+
 /*gets called when matched platform device is found*/
 int pcd_platform_driver_prob(struct platform_device *pdev)
 {
@@ -171,30 +173,34 @@ int pcd_platform_driver_prob(struct platform_device *pdev)
 
 	int driver_data;
 
+	/* used to store matched entry of 'of_device_id' list of this driver */
+	const struct of_device_id *match;
+
 	dev_info(dev,"A device is detected\n");
 
-	pdata = pcdev_get_platdata_from_dt(dev);
+	/*match will always be NULL if LINUX doesnt support device tree i.e CONFIG_OF is off */
+	match = of_match_device( of_match_ptr(org_pcdev_dt_match), dev);
 
-	if(IS_ERR(pdata))
-		return PTR_ERR(pdata);
+	if(match){
+		pdata = pcdev_get_platdata_from_dt(dev);
+		if(IS_ERR(pdata))
+			return PTR_ERR(pdata);
+	
+		driver_data = (int)match->data;
+	}else{
+	
+		pdata = (struct pcdev_platform_data*) dev_get_platdata(dev);
+		driver_data = pdev->id_entry->driver_data;
+	}
+
+
 
 
 	/*1. Get the platform data */
 	if(!pdata)
 	{
-		pdata = (struct pcdev_platform_data*) dev_get_platdata(dev);
-		if(!pdata){
-			dev_info(dev,"No platform data available\n");
-			return -EINVAL;
-		}
-
-		driver_data = pdev->id_entry->driver_data;
-	}else{
-		//struct of_device_id *match;
-		//match = of_match_device(dev->driver->of_match_table,dev);
-		//driver_data = (int)match->data;
-		driver_data = (int) of_device_get_match_data(dev);
-		
+		dev_info(dev,"No platform data available\n");
+		return -EINVAL;
 	}
 
 
@@ -286,7 +292,7 @@ struct platform_driver pcd_platform_driver =
 	.id_table = pcdevs_ids, 
 	.driver = {
 		.name = "pseudo-char-device",
-		.of_match_table = org_pcdev_dt_match,
+		.of_match_table = of_match_ptr(org_pcdev_dt_match),
 	}
 };
 
