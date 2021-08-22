@@ -4,33 +4,28 @@
 /{
 	fragment@0 {
 		target = <&pcdev1>;
-		_OVERLAY_ {
+		__overlay__ {
 			status = "disabled";
 		};
 	
-
 	};
 
 	fragment@1 {
 		target = <&pcdev2>;
-		_OVERLAY_ {
+		__overlay__ {
 			status = "disabled";
-		};
-	
+		};	
 
 	};
 
 	fragment@2 {
 		target = <&pcdev3>;
-		_OVERLAY_ {
+		__overlay__ {
 			org,size = <1048>;
                 	org,device-serial-num = "PCDEV4XXXXXX";
 
 		};
 	
-
 	};
-
-
 
 };
