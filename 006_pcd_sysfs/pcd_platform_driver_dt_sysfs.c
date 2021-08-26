@@ -26,6 +26,44 @@ struct file_operations pcd_fops=
 	.owner = THIS_MODULE
 };
 
+ssize_t max_size_show(struct device *dev, struct device_attribute *attr,char *buf)
+{
+	return 0;
+}
+
+ssize_t max_size_store(struct device *dev, struct device_attribute *attr,const char *buf, size_t count)
+{
+	return 0;
+}
+
+ssize_t serial_num_show(struct device *dev, struct device_attribute *attr,char *buf)
+{
+	return 0;
+}
+
+ssize_t serial_num_store(struct device *dev, struct device_attribute *attr,const char *buf, size_t count)
+{
+	return 0;
+}
+
+static DEVICE_ATTR( max_size, S_IRUGO|S_IWUSR, max_size_show, max_size_store);
+static DEVICE_ATTR( serial_num, S_IRUGO,serial_num_show, serial_num_store);
+
+int pcd_sysfs_create_files(struct device *pcd_dev)
+{
+	int ret;
+
+	ret = sysfs_create_file(&pcd_dev->kobj,&dev_attr_max_size.attr);
+	if(ret)
+		return ret;
+
+	ret = sysfs_create_file(&pcd_dev->kobj,&dev_attr_serial_num.attr);
+	if(ret)
+		return ret;
+
+	return 0;
+}
+
 /*gets called when the device is removed from the system*/
 int pcd_platform_driver_remove(struct platform_device *pdev)
 {
@@ -186,6 +224,12 @@ int pcd_platform_driver_prob(struct platform_device *pdev)
 
 
 	pcdrv_data.total_devices++;
+
+	ret = pcd_sysfs_create_files( pcdrv_data.device_pcd  );
+	if(ret < 0){
+		device_destroy(pcdrv_data.class_pcd,dev_data->dev_num);
+		return ret;
+	}
 
 	pr_info("The prob was successful\n");
 	return 0;
