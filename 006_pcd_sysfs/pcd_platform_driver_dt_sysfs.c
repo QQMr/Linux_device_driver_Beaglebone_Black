@@ -26,28 +26,60 @@ struct file_operations pcd_fops=
 	.owner = THIS_MODULE
 };
 
-ssize_t max_size_show(struct device *dev, struct device_attribute *attr,char *buf)
+ssize_t show_serial_num(struct device *dev, struct device_attribute *attr,char *buf)
 {
-	return 0;
+	/* get access to the device private data */
+	struct pcdev_private_data *dev_data = dev_get_drvdata(dev->parent);
+
+	return sprintf(buf,"%s\n",dev_data->pdata.serial_number);
+
 }
 
-ssize_t max_size_store(struct device *dev, struct device_attribute *attr,const char *buf, size_t count)
+ssize_t show_max_size(struct device *dev, struct device_attribute *attr,char *buf)
 {
-	return 0;
+	/* get access to the device private data */
+	struct pcdev_private_data *dev_data = dev_get_drvdata(dev->parent);
+
+	return sprintf(buf,"%d\n",dev_data->pdata.size);
+
 }
 
-ssize_t serial_num_show(struct device *dev, struct device_attribute *attr,char *buf)
+ssize_t store_max_size(struct device *dev, struct device_attribute *attr,const char *buf, size_t count)
 {
-	return 0;
+	long result;
+	int ret;
+
+	/* get access to the device private data */
+	struct pcdev_private_data *dev_data = dev_get_drvdata(dev->parent);
+
+	ret = kstrtol(buf,10,&result);
+	if(ret)
+	{
+		dev_info(dev, "kstrtol error");
+		return ret;
+	}
+	else
+	{
+		dev_info(dev, "store size is %ld\n", result);	
+	}
+	dev_data->pdata.size = result;
+
+	devm_kfree(dev->parent, dev_data->buffer);
+	dev_data->buffer = devm_kzalloc( dev->parent, dev_data->pdata.size , GFP_KERNEL );
+
+	if(IS_ERR(dev_data->buffer))
+	{
+		dev_info(dev, "devm_kzalloc error");
+	}
+
+	return count;
 }
 
-ssize_t serial_num_store(struct device *dev, struct device_attribute *attr,const char *buf, size_t count)
-{
-	return 0;
-}
 
-static DEVICE_ATTR( max_size, S_IRUGO|S_IWUSR, max_size_show, max_size_store);
-static DEVICE_ATTR( serial_num, S_IRUGO,serial_num_show, serial_num_store);
+
+
+static DEVICE_ATTR( max_size, S_IRUGO|S_IWUSR, show_max_size, store_max_size);
+static DEVICE_ATTR( serial_num, S_IRUGO, show_serial_num, NULL);
 
 int pcd_sysfs_create_files(struct device *pcd_dev)
 {
