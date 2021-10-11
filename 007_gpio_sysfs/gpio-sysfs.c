@@ -42,6 +42,36 @@ struct of_device_id gpio_device_match[] =
     { }
 };
 
+ssize_t direction_show(struct device *dev, struct device_attribute *attr,char *buf)
+{
+    return 0;
+}
+
+ssize_t direction_store(struct device *dev, struct device_attribute *attr,const char *buf, size_t count)
+{
+    return 0;
+}
+
+ssize_t value_show(struct device *dev, struct device_attribute *attr,char *buf)
+{
+    return 0;
+}
+
+ssize_t value_store(struct device *dev, struct device_attribute *attr,const char *buf, size_t count)
+{
+    return 0;
+}
+
+ssize_t label_show(struct device *dev, struct device_attribute *attr,char *buf)
+{
+    return 0;
+}
+
+static DEVICE_ATTR_RW(direction);
+static DEVICE_ATTR_RW(value);
+static DEVICE_ATTR_RO(label);
+
+
 static int gpio_sysfs_remove(struct platform_device *pdev)
 {
     return 0;
