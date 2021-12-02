@@ -53,9 +53,56 @@ static ssize_t arduino_i2c_write(struct file *filp, const char __user *buf, size
     return count;
 }
 
+
+ssize_t arduino_i2c_read(struct file * filp, char __user *buff, size_t count, loff_t *f_pos)
+{
+
+      struct i2c_client *client = filp -> private_data;
+	struct pcdev_private_data *pcdev_data = (struct pcdev_private_data*)filp->private_data;
+
+	//int max_size = pcdev_data->size;
+	//char *device_buffer = pcdev_data->buffer;
+
+    char tBuffer[32];
+    int max_size = 32;
+	char *device_buffer = tBuffer;
+
+	pr_info("read requested for %zu bytes \n",count);
+	pr_info("current file position = %lld",*f_pos);
+
+    for(int i=0;i<32;i++)
+    {
+        tBuffer[i] = '0'+i;
+    }
+
+
+	/* Adjust the 'count'  */
+	if( (*f_pos+count) > max_size  )
+		count = max_size - *f_pos;
+
+    i2c_smbus_read_i2c_block_data(client, 0x30, count, device_buffer);
+
+	/* copy to user*/
+	if( copy_to_user(buff,&device_buffer[*f_pos],count) ){
+		return -EFAULT;
+	}
+
+	/*update the current file position */
+	*f_pos += count;
+
+	pr_info("Number of bytes succcesfully read = %zu\n",count);
+	pr_info("Update file position = %lld\n",*f_pos);
+
+	/*Return number of bytes which have been succssfully read*/
+
+	return count;
+
+}
+
 struct file_operations arduino_i2c_fops = {
     .open = arduino_i2c_open,
     .write = arduino_i2c_write,
+    .read = arduino_i2c_read,
 };
 
 
