@@ -44,27 +44,60 @@ struct of_device_id gpio_device_match[] =
 
 ssize_t direction_show(struct device *dev, struct device_attribute *attr,char *buf)
 {
-    return 0;
+    struct gpiodev_private_data *dev_data= dev_get_drvdata(dev);
+    int dir;
+    char *direction;
+
+    dir = gpiod_get_direction(dev_data->desc);
+    if(dir < 0)
+        return dir;
+    
+    /*if dir = 0, then show "out". if dir =1 , then show "in" */
+    direction = (dir == 0) ? "out" : "in";
+
+    return sprintf(buf,"%s",direction);
 }
 
 ssize_t direction_store(struct device *dev, struct device_attribute *attr,const char *buf, size_t count)
 {
-    return 0;
+    int ret;
+    struct gpiodev_private_data *dev_data= dev_get_drvdata(dev);
+    if(sysfs_streq(buf,"in"))
+        ret = gpiod_direction_input(dev_data->desc);
+    else if(sysfs_streq(buf,"out"))
+        ret = gpiod_direction_output(dev_data->desc,0);
+    else
+        ret = -EINVAL;
+
+    return ret? ret:count;
 }
 
 ssize_t value_show(struct device *dev, struct device_attribute *attr,char *buf)
 {
-    return 0;
+    struct gpiodev_private_data *dev_data= dev_get_drvdata(dev);
+    int value;
+    value = gpiod_get_value(dev_data->desc);
+    return sprintf(buf,"%d\n",value);
 }
 
 ssize_t value_store(struct device *dev, struct device_attribute *attr,const char *buf, size_t count)
 {
+    struct gpiodev_private_data *dev_data= dev_get_drvdata(dev);
+    int ret;
+    long value;
+    
+    ret = kstrtol(buf,0,&value);
+    if(ret)
+        return ret;
+    
+    gpiod_set_value(dev_data->desc,ret);
     return 0;
 }
 
 ssize_t label_show(struct device *dev, struct device_attribute *attr,char *buf)
 {
-    return 0;
+   struct gpiodev_private_data *dev_data= dev_get_drvdata(dev);
+    return sprintf(buf,"%s",dev_data->label);
 }
 
 static DEVICE_ATTR_RW(direction);
