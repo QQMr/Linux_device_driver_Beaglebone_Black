@@ -34,13 +34,19 @@ static int arduino_i2c_open(struct inode *inode, struct file *filp)
 static ssize_t arduino_i2c_write(struct file *filp, const char __user *buf, size_t count,
 		loff_t *offset)
 {
-    char device_buffer[1024];
+    char device_buffer[1000];
     struct i2c_client *client = filp -> private_data;
     pr_info("Dummy device WRITE.\n");
     if (!client) {
     	pr_err("Failed to get struct i2c_client.\n");
-	return -EINVAL;
+	    return -EINVAL;
     }
+
+    if( count > 1000 ){
+    	pr_err("write count is too much\n");
+	    return -EINVAL;
+    }
+
 
     if( copy_from_user(&device_buffer,buf,count) ){
             return -EFAULT;
@@ -187,8 +193,8 @@ static struct i2c_driver dummy_drv = {
     .remove = dummy_remove,
     .driver = {
     	.name = "dummy device 0.1",
-	.owner = THIS_MODULE,
-	.of_match_table = dummy_id_tables,
+	    .owner = THIS_MODULE,
+	    .of_match_table = dummy_id_tables,
     },
 };
 
