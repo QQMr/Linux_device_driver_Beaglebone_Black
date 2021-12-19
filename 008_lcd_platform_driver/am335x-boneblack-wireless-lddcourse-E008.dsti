@@ -27,37 +27,73 @@
 
 	bone_gpio_devs {
 		compatible = "org,bone-gpio-sysfs";
+		pinctrl-single,name = "default";
+		pinctrl-0 = <&p8_gpios>;
 
 		gpio1{
-				label = "gpio2.2";
-				bone-gpio = <&gpio2 2 GPIO_ACTIVE_HIGH>;
+				label = "gpio2.6";
+				bone-gpio = <&gpio2 6 GPIO_ACTIVE_HIGH>;
 		};
 
 		gpio2{
-				label = "gpio2.3";
-				bone-gpio = <&gpio2 3 GPIO_ACTIVE_HIGH>;
+				label = "gpio2.7";
+				bone-gpio = <&gpio2 7 GPIO_ACTIVE_HIGH>;
 		};
 
 		gpio3{
-				label = "gpio2.4";
-				bone-gpio = <&gpio2 4 GPIO_ACTIVE_HIGH>;
+				label = "gpio2.8";
+				bone-gpio = <&gpio2 8 GPIO_ACTIVE_HIGH>;
 		};
 
 		gpio4{
-				label = "usrled0:gpio1.21";
-				bone-gpio = <&gpio1 21 GPIO_ACTIVE_HIGH>;
+				label = "gpio2.9";
+				bone-gpio = <&gpio2 9 GPIO_ACTIVE_HIGH>;
 		};
 
 		gpio5{
-				label = "usrled1:gpio1.22";
-				bone-gpio = <&gpio1 22 GPIO_ACTIVE_HIGH>;
+				label = "gpio2.10";
+				bone-gpio = <&gpio2 10 GPIO_ACTIVE_HIGH>;
 		};
 
 		gpio6{
-				label = "usrled2:gpio1.23";
+				label = "gpio2.11";
+				bone-gpio = <&gpio2 11 GPIO_ACTIVE_HIGH>;
+		};
+
+		gpio7{
+				label = "gpio2.12";
+				bone-gpio = <&gpio2 23 GPIO_ACTIVE_HIGH>;
+		};
+
+		led1{
+				label = "usrled1:gpio1.22";
 				bone-gpio = <&gpio1 23 GPIO_ACTIVE_HIGH>;
 		};
 
+		led2{
+				label = "usrled2:gpio1.23";
+				bone-gpio = <&gpio1 23 GPIO_ACTIVE_HIGH>;
+		};
+	};//bone_gpio_devs
+}; //root bode
+
+&tda19988 {
+	status = "disabled";
+};
+
+&am33xx_pinmux {
+	p8_gpios: bone_p8_gpios {
+		pinctrl-single,pins = <
+			AM33XX_PADCONF(AM335X_PIN_LCD_DATA0, PIN_OUTPUT, MUX_MODE7)
+			AM33XX_PADCONF(AM335X_PIN_LCD_DATA1, PIN_OUTPUT, MUX_MODE7)
+			AM33XX_PADCONF(AM335X_PIN_LCD_DATA2, PIN_OUTPUT, MUX_MODE7)
+			AM33XX_PADCONF(AM335X_PIN_LCD_DATA3, PIN_OUTPUT, MUX_MODE7)
+			AM33XX_PADCONF(AM335X_PIN_LCD_DATA4, PIN_OUTPUT, MUX_MODE7)
+			AM33XX_PADCONF(AM335X_PIN_LCD_DATA5, PIN_OUTPUT, MUX_MODE7)
+			AM33XX_PADCONF(AM335X_PIN_LCD_DATA6, PIN_OUTPUT, MUX_MODE7)
+			AM33XX_PADCONF(AM335X_PIN_LCD_DATA7, PIN_OUTPUT, MUX_MODE7)
+		>;
 	};
 };
+
 
