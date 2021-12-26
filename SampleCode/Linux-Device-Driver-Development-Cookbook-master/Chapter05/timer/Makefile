@@ -19,3 +19,6 @@ clean:
 
 host:
 	make -C $(HOST_KERN_DIR) M=$(PWD) modules
+
+copy-drv:
+	scp *.ko  debian@192.168.7.2:/home/debian/drivers
