@@ -6,6 +6,8 @@
 # include <linux/delay.h>
 # include "./Arduino_HD44780Driver/Wrapper_Function.h"
 # include "./Arduino_HD44780Driver/HD44780U_I2C_Burton.h"
+#include "LCD_DelayWork.h"
+
 //    1、void ndelay(unsigned long nsecs);         纳秒级：1/10^-10
 //    2、void udelay(unsigned long usecs);         微秒级: 1/10^-6
 //    3、void mdelay(unsigned long msecs);         毫秒级：1/10^-3
@@ -15,10 +17,12 @@ static struct i2c_client *myClient=NULL;
 void Wrapper_Delay(uint32_t value)
 {
     mdelay(value);
+    //msleep(value);
 }
 void Wrapper_delayMicroseconds(uint32_t value)
 {
     udelay(value);
+    //msleep( (value+999)/1000);
 }
 void Wrapper_WriteOneByte_I2C(uint8_t value)
 {
@@ -48,11 +52,14 @@ static int dummy_probe(struct i2c_client *client, const struct i2c_device_id *id
     setCursor(2,3);
     WriteMessage("Power By Ec-yuan!");
     setCursor(0,0);
+
+    my_delayed_work_init();
     return 0;      
 }
 
 static int dummy_remove(struct i2c_client *client)
 {
+    my_delayed_work_exit();
     pr_info("Dummy device is removing.\n");
     return 0;
 }

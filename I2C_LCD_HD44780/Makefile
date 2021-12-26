@@ -1,5 +1,5 @@
 obj-m:= LcdHD44780.o
-LcdHD44780-objs += ./Arduino_HD44780Driver/HD44780U_I2C_Burton.o I2c_LcdHD44780.o
+LcdHD44780-objs += ./Arduino_HD44780Driver/HD44780U_I2C_Burton.o LCD_DelayWork.o I2c_LcdHD44780.o
 ARCH =arm
 CROSS_COMPLIE =arm-linux-gnueabihf-
 KERN_DIR = /home/qq/workspace/ldd/source/linux_bbb_5.4/
