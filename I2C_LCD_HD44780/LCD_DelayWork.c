@@ -16,15 +16,15 @@ static int data=0;
 
 static void delayed_work(struct work_struct *work)
 {
-	pr_info("delay work %d\n",data++);
+	// pr_info("delay work %d\n",data++);
 	scrollDisplayRight();
-    mod_delayed_work(system_wq, &initiate_delay_work, msecs_to_jiffies(2000));
+    mod_delayed_work(system_wq, &initiate_delay_work, msecs_to_jiffies(500));
 }
 
 int my_delayed_work_init( void )
 {
     INIT_DELAYED_WORK(&initiate_delay_work, delayed_work);
-    schedule_delayed_work(&initiate_delay_work, msecs_to_jiffies(2000));
+    schedule_delayed_work(&initiate_delay_work, msecs_to_jiffies(500));
     return 0;
 }
 

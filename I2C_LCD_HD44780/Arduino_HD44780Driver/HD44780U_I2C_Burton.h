@@ -19,6 +19,7 @@ extern void backlight(void);
 extern void setCursor(uint8_t col, uint8_t row);
 extern void WriteMessage(char* buffer);
 extern void scrollDisplayRight(void);
+extern void clear(void);
 // commands
 #define LCD_CLEARDISPLAY 0x01
 #define LCD_RETURNHOME 0x02
