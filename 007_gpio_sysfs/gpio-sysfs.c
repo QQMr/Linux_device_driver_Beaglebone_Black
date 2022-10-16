@@ -90,9 +90,10 @@ ssize_t value_store(struct device *dev, struct device_attribute *attr,const char
     ret = kstrtol(buf,0,&value);
     if(ret)
         return ret;
-    
-    gpiod_set_value(dev_data->desc,ret);
-    return 0;
+    dev_info(dev,"gpiod_set_value %ld",value);
+    //dev_info(dev,"gpiod_set_value %ld",value);
+    gpiod_set_value(dev_data->desc,value);
+    return count;
 }
 
 ssize_t label_show(struct device *dev, struct device_attribute *attr,char *buf)
@@ -252,10 +253,9 @@ static int __init gpio_sysfs_init(void)
 
 static void __exit gpio_sysfs_exit(void)
 {
-    class_destroy( gpio_drv_data.class_gpio );
-
     platform_driver_unregister(&gpiosysfs_platform_driver);
 
+    class_destroy( gpio_drv_data.class_gpio );
 }
 
 module_init(gpio_sysfs_init);
