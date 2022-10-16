@@ -52,9 +52,13 @@ static ssize_t arduino_i2c_write(struct file *filp, const char __user *buf, size
             return -EFAULT;
     }
     pr_info("Dummy device WRITE-2.\n");
+    #if 0
     for (int i = 0; i < count; i++) {
         i2c_smbus_write_byte(client, device_buffer[i]);
     }
+    #else
+    i2c_smbus_write_i2c_block_data(client, device_buffer[0], count-1, device_buffer+1);
+    #endif
     pr_info("Dummy device WRITE-END.\n");
     return count;
 }
@@ -116,9 +120,14 @@ static int dummy_probe(struct i2c_client *client, const struct i2c_device_id *id
 {
     pr_info("Dummy device is being probed.\n");
     char *info = "Hello, Arduino!";
+
+    #if 0
     for (int i = 0; i < strlen(info); i++) {
     	i2c_smbus_write_byte (client, info[i]);
     }
+    #else
+    i2c_smbus_write_i2c_block_data(client, info[0], 15, info+1);
+    #endif
 
     int err = 0;
 
