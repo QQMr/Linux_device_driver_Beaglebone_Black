@@ -8,7 +8,10 @@
  * pinctrl-nomadik.c, please see original file for copyright information
  * pinctrl-tegra.c, please see original file for copyright information
  */
+#define BURTON_DEBUG_PINCTRL
 
+
+#define pr_fmt(fmt) "BurtonHH_" KBUILD_MODNAME ":%s:%d: " fmt, __func__, __LINE__
 #include <linux/bitmap.h>
 #include <linux/bug.h>
 #include <linux/delay.h>
@@ -34,6 +37,9 @@
 #include <linux/spinlock.h>
 #include <linux/types.h>
 #include <dt-bindings/pinctrl/bcm2835.h>
+
+#define burton_pr_info(fmt, ...) \
+	pr_info(fmt, ##__VA_ARGS__)
 
 #define MODULE_NAME "pinctrl-bcm2835"
 #define BCM2835_NUM_GPIOS 54
@@ -865,7 +871,7 @@ static int bcm2835_pmx_set(struct pinctrl_dev *pctldev,
 		unsigned group_selector)
 {
 	struct bcm2835_pinctrl *pc = pinctrl_dev_get_drvdata(pctldev);
-
+	 burton_pr_info("%s enter.\n", __func__);
 	bcm2835_pinctrl_fsel_set(pc, group_selector, func_selector);
 
 	return 0;
@@ -940,7 +946,7 @@ static int bcm2835_pinconf_set(struct pinctrl_dev *pctldev,
 	struct bcm2835_pinctrl *pc = pinctrl_dev_get_drvdata(pctldev);
 	u32 param, arg;
 	int i;
-
+	 burton_pr_info("%s enter.\n", __func__);
 	for (i = 0; i < num_configs; i++) {
 		param = pinconf_to_config_param(configs[i]);
 		arg = pinconf_to_config_argument(configs[i]);
@@ -1007,7 +1013,7 @@ static int bcm2711_pinconf_set(struct pinctrl_dev *pctldev,
 	struct bcm2835_pinctrl *pc = pinctrl_dev_get_drvdata(pctldev);
 	u32 param, arg;
 	int i;
-
+	 burton_pr_info("%s enter.\n", __func__);
 	for (i = 0; i < num_configs; i++) {
 		param = pinconf_to_config_param(configs[i]);
 		arg = pinconf_to_config_argument(configs[i]);
@@ -1091,6 +1097,7 @@ static int bcm2835_pinctrl_probe(struct platform_device *pdev)
 	int err, i;
 	const struct of_device_id *match;
 
+	burton_pr_info("%s enter.\n", __func__);
 	BUILD_BUG_ON(ARRAY_SIZE(bcm2835_gpio_pins) != BCM2835_NUM_GPIOS);
 	BUILD_BUG_ON(ARRAY_SIZE(bcm2835_gpio_groups) != BCM2835_NUM_GPIOS);
 
