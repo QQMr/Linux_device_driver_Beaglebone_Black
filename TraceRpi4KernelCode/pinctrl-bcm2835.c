@@ -11,7 +11,7 @@
 #define BURTON_DEBUG_PINCTRL
 
 
-#define pr_fmt(fmt) "BurtonHH_" KBUILD_MODNAME ":%s:%d: " fmt, __func__, __LINE__
+#define pr_fmt(fmt) "Burton_" KBUILD_MODNAME ":%s:%d: " fmt, __func__, __LINE__
 #include <linux/bitmap.h>
 #include <linux/bug.h>
 #include <linux/delay.h>
@@ -1114,6 +1114,7 @@ static int bcm2835_pinctrl_probe(struct platform_device *pdev)
 		return err;
 	}
 
+	burton_pr_info("iomen name:%s s:%X e:%X ", iomem.name, iomem.start,iomem.end );
 	pc->base = devm_ioremap_resource(dev, &iomem);
 	if (IS_ERR(pc->base))
 		return PTR_ERR(pc->base);
