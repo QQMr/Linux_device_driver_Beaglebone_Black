@@ -1,0 +1,24 @@
+/dts-v1/;
+/plugin/;
+
+/ {
+	compatible = "brcm,bcm2835";
+};
+
+&gpio {
+	arduino_gpio_irq: arduino_gpio_irq {
+		brcm,pins = <0x11>;
+		brcm,function = <0x0>;
+		brcm,pull = <0x0>;
+	};
+};
+
+&{/} {
+	arduino: arduino {       
+		compatible = "arduino,uno-irq";   
+		arduino-gpios = <&gpio 0x11 0>; 
+		pinctrl-0 = <&arduino_gpio_irq>;
+		pinctrl-names = "default";
+		status = "ok";
+	}; 
+};

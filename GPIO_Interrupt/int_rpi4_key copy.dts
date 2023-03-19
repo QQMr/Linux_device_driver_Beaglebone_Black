@@ -1,0 +1,31 @@
+/dts-v1/;
+/plugin/;
+
+/{
+    compatible = "brcm,bcm2835";
+    fragment@0 {
+        target = <&gpio>;
+        __overlay__ {
+            key_pin: key_pin {
+		        brcm,pins = <23>;
+		        brcm,function = <0>;	
+		        brcm,pull = <1>; 	
+	        };
+        };
+    };
+
+
+    fragment@1 {
+        target-path = "/";
+        __overlay__ {
+            int_key:int_key {
+		        compatible = "arrow,intkey";
+                pinctrl-names = "default";
+                pinctrl-0 = <&key_pin>;
+                gpios = <&gpio 23 0>;
+                interrupts = <23 1>; 
+                interrupt-parent = <&gpio>;
+	        };
+        };
+    };
+};
