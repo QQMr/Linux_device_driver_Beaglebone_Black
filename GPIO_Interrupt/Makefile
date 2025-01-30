@@ -3,7 +3,7 @@ obj-m:= int_rpi4_key.o
 ARCH =arm
 CROSS_COMPLIE =arm-linux-gnueabihf-
 BEAGLE_BONE_KERN_DIR = /home/qq/workspace/ldd/source/linux_bbb_5.4/
-PI4_BONE_KERN_DIR = /home/qq/workspace/source/linux_rpi-5.4.y/
+PI4_BONE_KERN_DIR = /home/qq/workspace/ldd/source/rpi4/linux/
 KERN_DIR := $(PI4_BONE_KERN_DIR)
 HOST_KERN_DIR = /lib/modules/$(shell uname -r)/build/
 ccflags-y += -std=gnu99
@@ -34,6 +34,9 @@ make_dtbo:
 	cp -f int_rpi4_key.dts $(KERN_DIR)/arch/arm/boot/dts/overlays/int_rpi4_key-overlay.dts
 	cd $(KERN_DIR); make ARCH=$(ARCH) CROSS_COMPILE=$(CROSS_COMPLIE) dtbs
 	cp -f $(KERN_DIR)/arch/arm/boot/dts/overlays/int_rpi4_key.dtbo ./
+
+make_dtbo2:
+	$(KERN_DIR)/scripts/dtc/dtc -I dts -O dtb -o int_rpi4_key.dtbo int_rpi4_key.dts
 
 copy-dtbo:
 	@echo "Use PI4 setting"
