@@ -1,0 +1,23 @@
+#include <SPI.h>
+void setup() {
+    Serial.begin(9600);
+    pinMode(MISO, OUTPUT);
+    pinMode(MOSI, INPUT);
+    SPI.setClockDivider(SPI_CLOCK_DIV128);
+    SPCR |= _BV(SPE);
+    SPCR |= _BV(SPIE);
+    SPCR &= ~(_BV(MSTR));
+}
+
+#define BUF_LEN 128
+char buf[BUF_LEN + 1] = {0};
+int top = -1;
+ISR(SPI_STC_vect)
+{
+    buf[(++top) % BUF_LEN] = SPDR;
+}
+
+void loop() {
+    Serial.println(buf);
+    delay(1000);
+}
