@@ -1,0 +1,1 @@
+savedcmd_drivers/input/touchscreen/mediatek/Burton_touch/focaltech_core.mod := printf '%s\n'   focaltech_core.o | awk '!x[$$0]++ { print("drivers/input/touchscreen/mediatek/Burton_touch/"$$0) }' > drivers/input/touchscreen/mediatek/Burton_touch/focaltech_core.mod

@@ -1,0 +1,1 @@
+savedcmd_drivers/input/touchscreen/mediatek/built-in.a := rm -f drivers/input/touchscreen/mediatek/built-in.a;  printf "drivers/input/touchscreen/mediatek/%s " mtk_tpd.o tpd_button.o tpd_calibrate.o tpd_debug.o tpd_default.o tpd_init.o tpd_misc.o tpd_setting.o Burton_touch/built-in.a | xargs arm-linux-gnueabihf-ar cDPrST drivers/input/touchscreen/mediatek/built-in.a

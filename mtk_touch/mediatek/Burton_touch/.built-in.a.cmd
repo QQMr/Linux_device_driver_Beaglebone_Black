@@ -1,0 +1,1 @@
+savedcmd_drivers/input/touchscreen/mediatek/Burton_touch/built-in.a := rm -f drivers/input/touchscreen/mediatek/Burton_touch/built-in.a;  printf "drivers/input/touchscreen/mediatek/Burton_touch/%s " focaltech_core.o | xargs arm-linux-gnueabihf-ar cDPrST drivers/input/touchscreen/mediatek/Burton_touch/built-in.a
